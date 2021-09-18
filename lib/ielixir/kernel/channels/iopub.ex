@@ -7,7 +7,11 @@ defmodule IElixir.Kernel.Channels.IOPub do
 
   # Streams
   # https://jupyter-client.readthedocs.io/en/stable/messaging.html#streams-stdout-stderr-etc
-  @spec stream(parent_packet :: IElixir.Kernel.Wire.Packet.t(), stream_name :: String.t(), stream_text :: String.t()) :: :ok
+  @spec stream(
+          parent_packet :: IElixir.Kernel.Wire.Packet.t(),
+          stream_name :: String.t(),
+          stream_text :: String.t()
+        ) :: :ok
   def stream(
         %Packet{message: parent_message, uuids: uuids} = _parent_packet,
         stream_name,
@@ -31,10 +35,13 @@ defmodule IElixir.Kernel.Channels.IOPub do
 
   # Display data
   # https://jupyter-client.readthedocs.io/en/stable/messaging.html#display-data
-  @spec display_data(parent_packet :: IElixir.Kernel.Wire.Packet.t(), content_fields :: Keyword.t()) :: :ok
+  @spec display_data(
+          parent_packet :: IElixir.Kernel.Wire.Packet.t(),
+          display :: IElixir.Kernel.Display.t()
+        ) :: :ok
   def display_data(
         %Packet{message: parent_message, uuids: uuids} = _parent_packet,
-        content_fields # Keyword(data, metadata, transient)
+        display
       ) do
     %Packet{
       uuids: uuids,
@@ -44,9 +51,9 @@ defmodule IElixir.Kernel.Channels.IOPub do
           parent_message,
           "display_data",
           content: %{
-            data: Keyword.get(content_fields, :data, %{}),
-            metadata: Keyword.get(content_fields, :metadata, %{}),
-            transient: Keyword.get(content_fields, :transient, %{}),
+            data: display.data,
+            metadata: display.metadata,
+            transient: display.transient
           }
         )
     }

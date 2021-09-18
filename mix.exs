@@ -46,6 +46,7 @@ defmodule IElixir.Mixfile do
       {:chumak, "~> 1.4"},
       {:jason, "~> 1.2"},
       {:uuid, "~> 2.0", hex: :uuid_erl},
+      {:ex_image_info, "~> 0.2.4"},
 
       # Docs dependencies
       {:ex_doc, ">= 0.0.0", only: :docs, runtime: false},
@@ -53,7 +54,7 @@ defmodule IElixir.Mixfile do
 
       # Test dependencies
       {:excoveralls, "~> 0.14", only: :test},
-      {:dialyxir, "~> 1.1", runtime: false, only: [:dev, :test]},
+      {:dialyxir, "~> 1.1", runtime: false, only: [:dev, :test]}
     ]
   end
 
@@ -65,7 +66,7 @@ defmodule IElixir.Mixfile do
         "priv",
         "mix.exs",
         "README.md",
-        "LICENSE",
+        "LICENSE"
       ],
       maintainers: ["Dmitry Rubinstein", "Georgy Sychev"],
       licenses: ["MIT"]

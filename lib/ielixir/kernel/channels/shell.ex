@@ -129,11 +129,20 @@ defmodule IElixir.Kernel.Channels.Shell do
       "ERROR: Crash!!"
     )
 
+    # IOPub.display_data(
+    #   packet,
+    #   IElixir.Kernel.Displayable.display(NaiveDateTime.utc_now)
+    # )
+
+    # IOPub.display_data(
+    #   packet,
+    #   IElixir.Kernel.Displayable.display(~s({"foo": true}))
+    # )
+
     IOPub.display_data(
       packet,
-      data: %{"text/plain": inspect(NaiveDateTime.utc_now)}
+      IElixir.Kernel.Displayable.display(File.read!("/Users/dmitry.r/dev/elixir/IElixir/resources/logo.png"))
     )
-
 
     {
       %Packet{
