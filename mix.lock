@@ -23,4 +23,5 @@
   "ssl_verify_fun": {:hex, :ssl_verify_fun, "1.1.6", "cf344f5692c82d2cd7554f5ec8fd961548d4fd09e7d22f5b62482e5aeaebd4b0", [:make, :mix, :rebar3], [], "hexpm", "bdb0d2471f453c88ff3908e7686f86f9be327d065cc1ec16fa4540197ea04680"},
   "unicode_util_compat": {:hex, :unicode_util_compat, "0.7.0", "bc84380c9ab48177092f43ac89e4dfa2c6d62b40b8bd132b1059ecc7232f9a78", [:rebar3], [], "hexpm", "25eee6d67df61960cf6a794239566599b09e17e668d3700247bc498638152521"},
   "uuid": {:hex, :uuid_erl, "2.0.2", "0d1ca9d94ca3b058467bce20b7706cc816a2bdbbe0574dd008936ae97ea4ebe7", [:rebar3], [{:quickrand, "~> 2.0.2", [hex: :quickrand, repo: "hexpm", optional: false]}], "hexpm", "4866ca7b3bd0265bc371590dcd0fe2832fc08588a071b72d07e09e23f163d0d6"},
+  "vega_lite": {:hex, :vega_lite, "0.1.1", "ad4facf87a31dae37fafef062a7033728fde5bfe2c2cf9b363aa75d5f12619ac", [:mix], [], "hexpm", "9492b754e0e8ac7f4be51a69c1cf0e706608f6d7d7dd293f34064f79a6f6b42e"},
 }

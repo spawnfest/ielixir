@@ -57,3 +57,53 @@ defimpl IElixir.Kernel.Displayable, for: BitString do
     end
   end
 end
+
+defimpl IElixir.Kernel.Displayable, for: Map do
+  def display(
+        %{
+          "$schema" => "https://vega.github.io/schema/vega-lite/v5.json"
+        } = vega_doc
+      ) do
+    %IElixir.Kernel.Display{
+      data: %{
+        "application/vnd.vegalite.v4+json": %{vega_doc | "$schema" => "https://vega.github.io/schema/vega-lite/v4.json"}
+      }
+    }
+  end
+
+  # Basic implementation - for everything.
+  @spec display(binary) :: IElixir.Kernel.Display.t()
+  def display(term) do
+    case ExImageInfo.info(term) do
+      # This is not an image, or at least - not recognizable
+      nil ->
+        # Here we check that the data is valid json
+        case Jason.decode(term) do
+          {:ok, json_data} ->
+            %IElixir.Kernel.Display{
+              data: %{
+                "text/plain": inspect(term),
+                "application/json": json_data
+              },
+              metadata: %{"application/json": %{expanded: true}},
+              transient: %{}
+            }
+
+          # This is nothing
+          {:error, _reason} ->
+            %IElixir.Kernel.Display{
+              data: %{"text/plain": inspect(term)},
+              metadata: %{},
+              transient: %{}
+            }
+        end
+
+      {mime_type, width, height, _type_name} ->
+        %IElixir.Kernel.Display{
+          data: %{mime_type => Base.encode64(term), "text/plain" => inspect(term)},
+          metadata: %{mime_type => %{width: width, height: height}},
+          transient: %{}
+        }
+    end
+  end
+end

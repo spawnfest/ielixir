@@ -47,6 +47,7 @@ defmodule IElixir.Mixfile do
       {:jason, "~> 1.2"},
       {:uuid, "~> 2.0", hex: :uuid_erl},
       {:ex_image_info, "~> 0.2.4"},
+      {:vega_lite, "~> 0.1.1"},
 
       # Docs dependencies
       {:ex_doc, ">= 0.0.0", only: :docs, runtime: false},

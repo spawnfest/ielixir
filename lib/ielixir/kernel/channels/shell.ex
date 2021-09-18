@@ -123,6 +123,7 @@ defmodule IElixir.Kernel.Channels.Shell do
       "stdout",
       "OUT: BOOOM!!"
     )
+
     IOPub.stream(
       packet,
       "stderr",
@@ -139,9 +140,21 @@ defmodule IElixir.Kernel.Channels.Shell do
     #   IElixir.Kernel.Displayable.display(~s({"foo": true}))
     # )
 
+    # IOPub.display_data(
+    #   packet,
+    #   IElixir.Kernel.Displayable.display(File.read!("/Users/dmitry.r/dev/elixir/IElixir/resources/logo.png"))
+    # )
+
     IOPub.display_data(
       packet,
-      IElixir.Kernel.Displayable.display(File.read!("/Users/dmitry.r/dev/elixir/IElixir/resources/logo.png"))
+      IElixir.Kernel.Displayable.display(
+        VegaLite.new(width: 400, height: 400)
+        |> VegaLite.data_from_series(iteration: 1..100, score: 1..100)
+        |> VegaLite.mark(:line)
+        |> VegaLite.encode_field(:x, "iteration", type: :quantitative)
+        |> VegaLite.encode_field(:y, "score", type: :quantitative)
+        |> VegaLite.to_spec()
+      )
     )
 
     {
