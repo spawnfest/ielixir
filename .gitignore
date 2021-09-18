@@ -1,0 +1,17 @@
+/_build
+/cover
+/deps
+/.idea
+erl_crash.dump
+*.ez
+*.iml
+/ielixir
+test_db.sqlite3
+.DS_store
+resources/ielixir/kernel.json
+
+.elixir_ls
+*.sqlite3
+envs
+
+**/.ipynb_checkpoints/

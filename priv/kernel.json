@@ -1,0 +1,9 @@
+{
+    "argv": [
+        "ielixir",
+        "serve",
+        "{connection_file}"
+    ],
+    "display_name": "Elixir",
+    "language": "Elixir"
+}

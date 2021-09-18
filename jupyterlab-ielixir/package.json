@@ -1,0 +1,49 @@
+{
+  "name": "jupyterlab-ielixir",
+  "version": "0.0.1",
+  "description": "adds ihaskell syntax highlighting to jupyterlab",
+  "keywords": [
+    "jupyter",
+    "jupyterlab",
+    "ihaskell",
+    "jupyterlab-extension"
+  ],
+  "homepage": "https://github.com/ilhub/ielixir/",
+  "bugs": {
+    "url": "https://github.com/ilhub/ielixir/issues"
+  },
+  "license": "BSD-3-Clause",
+  "author": "Virviil",
+  "files": [
+    "lib/**/*.{d.ts,eot,gif,html,jpg,js,js.map,json,png,svg,woff2,ttf}",
+    "style/**/*.{css,eot,gif,html,jpg,json,png,svg,woff2,ttf}"
+  ],
+  "main": "lib/index.js",
+  "types": "lib/index.d.ts",
+  "repository": {
+    "type": "git",
+    "url": "git@github.com:ilhub/ielixir.git"
+  },
+  "scripts": {
+    "build": "tsc",
+    "clean": "rimraf lib",
+    "watch": "tsc -w"
+  },
+  "dependencies": {
+    "@jupyterlab/application": ">=2.0.0",
+    "@jupyterlab/apputils": ">=2.0.0",
+    "@jupyterlab/docregistry": ">=2.0.0",
+    "@jupyterlab/notebook": ">=2.0.0",
+    "@jupyterlab/services": ">=3.0.1",
+    "@lumino/disposable": "^1.1.2",
+    "codemirror": "^5.61.0",
+    "codemirror-mode-elixir": "^1.1.2"
+  },
+  "devDependencies": {
+    "rimraf": "^3.0.0",
+    "typescript": "~3.7.3"
+  },
+  "jupyterlab": {
+    "extension": true
+  }
+}
