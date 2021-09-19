@@ -96,3 +96,36 @@ For example, to run examples from project's root use:
 ```bash
 docker run --mount type=bind,source="$(pwd)"/resources/examples,target=/workspace -p 8000:8000 ielixir
 ```
+
+
+## Roadmap
+
+- [x] `jupyter` messaging protocol
+- [ ] `Elixir` node for each kernel
+  - [x] Standalone
+  - [ ] `mix project`
+  - [ ] `remote`
+- [x] Code highlighting for 
+  - [x] input
+  - [x] output
+- [ ] History saving and exposing
+- [ ] Compatibility with 
+  - [x] `console`
+  - [x] `notebook`
+  - [x] `lab`
+  - [ ] `vscode` extension
+- [x] Providing protocol for output decoration
+  - [x] Client side
+  - [x] kernel side
+- [x] Automaticly decorating
+  - [x] pictures 
+  - [x] vega plots
+  - [x] jsons
+- [ ] Autocompletion
+  - [x] Intellisense
+  - [ ] Perfect cursor positioning
+- [ ] Example notebooks
+  - [x] Intro to Jupyter
+  - [ ] Intro to Elixir inside IElixir
+  - [ ] Intro to Elixir
+  - [x] Example from Elixir's official syte
