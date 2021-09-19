@@ -18,6 +18,8 @@ defmodule IElixir.Runtime.ErlDist do
   # binary representation to the other node and load them dynamically.
   #
   # For further details see `IElixir.Runtime.ErlDist.NodeManager`.
+  
+  alias IElixir.Runtime.ErlDist.NodeManager
 
   # Modules to load into the connected node.
   @required_modules [
@@ -80,19 +82,19 @@ defmodule IElixir.Runtime.ErlDist do
   end
 
   defp start_node_manager(node, opts) do
-    :rpc.call(node, IElixir.Runtime.ErlDist.NodeManager, :start, [opts])
+    :rpc.call(node, NodeManager, :start, [opts])
   end
 
   defp start_runtime_server(node) do
-    IElixir.Runtime.ErlDist.NodeManager.start_runtime_server(node)
+    NodeManager.start_runtime_server(node)
   end
 
   defp modules_loaded?(node) do
-    :rpc.call(node, Code, :ensure_loaded?, [IElixir.Runtime.ErlDist.NodeManager])
+    :rpc.call(node, Code, :ensure_loaded?, [NodeManager])
   end
 
   defp node_manager_started?(node) do
-    case :rpc.call(node, Process, :whereis, [IElixir.Runtime.ErlDist.NodeManager]) do
+    case :rpc.call(node, Process, :whereis, [NodeManager]) do
       nil -> false
       _pid -> true
     end

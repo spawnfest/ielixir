@@ -1,4 +1,6 @@
 defmodule IElixir.Kernel.History do
+  @moduledoc false
+
   require Logger
 
   defmodule Record do

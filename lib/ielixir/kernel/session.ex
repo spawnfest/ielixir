@@ -9,7 +9,10 @@ defmodule IElixir.Kernel.Session do
   use GenServer
 
   alias IElixir.Kernel.History
+  alias IElixir.Kernel.Display
+  alias IElixir.Util.Substring
   alias IElixir.Runtime
+  alias IElixir.Util.Crypto
 
   @doc """
   Start the session server
@@ -56,11 +59,6 @@ defmodule IElixir.Kernel.Session do
         Logger.error("Invalid signature_scheme: #{inspect(scheme)}")
         {:error, "Invalid signature_scheme"}
     end
-  rescue
-    e ->
-      IO.inspect(e)
-      IO.inspect(__STACKTRACE__)
-      reraise(e, __STACKTRACE__)
   end
 
   @doc """
@@ -140,7 +138,7 @@ defmodule IElixir.Kernel.Session do
   end
 
   def handle_call({:compute_sig, parts}, _from, %{signature_data: {algo, key}} = state) do
-    {:reply, IElixir.Util.Crypto.compute_signature(algo, key, parts), state}
+    {:reply, Crypto.compute_signature(algo, key, parts), state}
   end
 
   def handle_cast(:increase_counter, state) do
@@ -163,7 +161,7 @@ defmodule IElixir.Kernel.Session do
       ) do
     {{from, cell_state}, evaluating_cells} = Map.pop(evaluating_cells, cell)
 
-    data = IElixir.Kernel.Display.display(data)
+    data = Display.display(data)
 
     cell_state =
       cell_state
@@ -181,7 +179,7 @@ defmodule IElixir.Kernel.Session do
       ) do
     {{from, cell_state}, completing_cells} = Map.pop(completing_cells, cell)
 
-    cursor_start = IElixir.Util.Substring.calculate_substring_position(cell_state.code, matches)
+    cursor_start = Substring.calculate_substring_position(cell_state.code, matches)
     cursor = cell_state.cursor
 
     cell_state =

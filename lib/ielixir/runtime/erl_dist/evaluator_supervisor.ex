@@ -24,7 +24,7 @@ defmodule IElixir.Runtime.ErlDist.EvaluatorSupervisor do
   def start_evaluator(supervisor) do
     case DynamicSupervisor.start_child(
            supervisor,
-           {Evaluator, [formatter: Evaluator.DefaultFormatter]}
+           {Evaluator, []}
          ) do
       {:ok, _pid, evaluator} -> {:ok, evaluator}
       {:error, reason} -> {:error, reason}

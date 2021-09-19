@@ -6,11 +6,6 @@ defmodule IElixir.Evaluator do
 
   @doc """
   Starts the evaluator.
-
-  Options:
-
-    * `formatter` - a module implementing the `IElixir.Evaluator.Formatter` behaviour,
-      used for transforming evaluation response before it's sent to the client
   """
   def start_link(opts \\ []) do
     case :proc_lib.start_link(__MODULE__, :init, [opts]) do
@@ -87,8 +82,6 @@ defmodule IElixir.Evaluator do
   end
 
   def init(opts) do
-    formatter = Keyword.get(opts, :formatter, Evaluator.IdentityFormatter)
-
     {:ok, io_proxy} = IOProxy.start_link()
 
     # Use the dedicated IO device as the group leader,
@@ -96,7 +89,7 @@ defmodule IElixir.Evaluator do
     Process.group_leader(self(), io_proxy)
 
     evaluator_ref = make_ref()
-    state = initial_state(evaluator_ref, formatter, io_proxy)
+    state = initial_state(evaluator_ref, io_proxy)
     evaluator = %{pid: self(), ref: evaluator_ref}
 
     :proc_lib.init_ack(evaluator)
@@ -111,10 +104,9 @@ defmodule IElixir.Evaluator do
     :ok
   end
 
-  defp initial_state(evaluator_ref, formatter, io_proxy) do
+  defp initial_state(evaluator_ref, io_proxy) do
     %{
       evaluator_ref: evaluator_ref,
-      formatter: formatter,
       io_proxy: io_proxy,
       context: initial_context()
     }
@@ -122,7 +114,8 @@ defmodule IElixir.Evaluator do
 
   defp initial_context() do
     env = :elixir.env_for_eval([])
-    {:ok, _, context} = eval("import IEx.Helpers", %{binding: [], env: env})
+    code = "import IEx.Helpers, except: [clear: 0, recompile: 0]"
+    {:ok, _, context} = eval(code, %{binding: [], env: env})
     context
   end
 

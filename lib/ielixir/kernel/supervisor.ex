@@ -20,7 +20,6 @@ defmodule IElixir.Kernel.Supervisor do
 
     children = [
       # Starting supporting services
-      {IElixir.Runtime.NodePool, []},
       {Kernel.History, %{db_path: db_path(), connection_data: connection_data}},
       {Kernel.Session, connection_data},
 

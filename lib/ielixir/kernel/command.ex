@@ -13,7 +13,7 @@ defmodule IElixir.Kernel.Command do
     end)
   end
 
-  defp command_line_parser(code_line, command = %__MODULE__{}) do
+  defp command_line_parser(code_line, %__MODULE__{} = command) do
     case IElixir.Util.MagicCommand.parse(code_line) do
       {:ok, value} -> Map.update(command, :magic, [], &[value | &1])
       {:error, value} -> Map.update(command, :code, [], &[value | &1])

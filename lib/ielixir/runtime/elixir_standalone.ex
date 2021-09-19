@@ -8,7 +8,7 @@ defmodule IElixir.Runtime.ElixirStandalone do
   # stay in the system when the session or the entire IElixir terminates.
 
   import IElixir.Runtime.StandaloneInit
-  import IElixir.Utils, only: [random_id: 0]
+  import IElixir.Utils, only: [random_id: 0, node_host: 0]
 
   @type t :: %__MODULE__{
           node: node(),
@@ -30,8 +30,7 @@ defmodule IElixir.Runtime.ElixirStandalone do
   @spec init() :: {:ok, t()} | {:error, String.t()}
   def init() do
     parent_node = node()
-    [_, hostname] = String.split("#{parent_node}", "@")
-    child_node = :"child-#{random_id()}@#{hostname}"
+    child_node = :"child-#{random_id()}@#{node_host()}"
     argv = [parent_node]
 
     with(

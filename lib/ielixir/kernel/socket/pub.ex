@@ -1,4 +1,6 @@
 defmodule IElixir.Kernel.Socket.Pub do
+  @moduledoc false
+
   defmacro __using__(opts) do
     channel_name = Keyword.get(opts, :name)
 

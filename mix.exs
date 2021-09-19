@@ -55,7 +55,8 @@ defmodule IElixir.Mixfile do
 
       # Test dependencies
       {:excoveralls, "~> 0.14", only: :test},
-      {:dialyxir, "~> 1.1", runtime: false, only: [:dev, :test]}
+      {:dialyxir, "~> 1.1", runtime: false, only: [:dev, :test]},
+      {:credo, "~> 1.5", runtime: false, only: [:dev, :test]}
     ]
   end
 

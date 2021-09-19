@@ -1,4 +1,6 @@
 defmodule IElixir.Kernel.Socket.Router do
+  @moduledoc false
+
   alias IElixir.Kernel.Wire
   alias IElixir.Kernel.Wire.Packet
 

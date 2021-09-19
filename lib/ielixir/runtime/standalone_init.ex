@@ -6,15 +6,7 @@ defmodule IElixir.Runtime.StandaloneInit do
   # and MixStandalone runtimes.
 
   alias IElixir.Utils.Emitter
-  alias IElixir.Runtime.NodePool
-
-  @doc """
-  Returns a random name for a dynamically spawned node.
-  """
-  @spec child_node_name(atom()) :: atom()
-  def child_node_name(parent) do
-    NodePool.get_name(parent)
-  end
+  alias IElixir.Runtime.ErlDist
 
   @doc """
   Tries locating Elixir executable in PATH.
@@ -90,7 +82,7 @@ defmodule IElixir.Runtime.StandaloneInit do
         {:node_started, init_ref, ^child_node, primary_pid} ->
           Port.demonitor(port_ref)
 
-          server_pid = IElixir.Runtime.ErlDist.initialize(child_node)
+          server_pid = ErlDist.initialize(child_node)
 
           send(primary_pid, {:node_initialized, init_ref})
 
