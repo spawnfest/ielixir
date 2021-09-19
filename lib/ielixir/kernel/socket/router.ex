@@ -21,7 +21,7 @@ defmodule IElixir.Kernel.Socket.Router do
 
       # API
       def init(%IElixir.Kernel.Socket.Config{connection_data: connection_data}) do
-        Logger.debug("Starting channel #{unquote(channel_name)}")
+        Logger.debug("Starting channel #{unquote(channel_name)} with PID: #{inspect(self())}")
 
         {
           :ok,

@@ -104,13 +104,16 @@ defmodule IElixir.Kernel.Channels.Shell do
         %Packet{
           uuids: uuids,
           message:
-            %Message{header: %{msg_type: "execute_request"}, content: _content} = parent_message
+            %Message{header: %{msg_type: "execute_request"}, content: %{"code" => code}} =
+              parent_message
         } = packet,
         _channel
       ) do
     Logger.debug("Received execute_request")
     IOPub.busy_notifier(packet).()
     Session.increase_counter()
+
+    IOPub.execute_input(packet, code, Session.get_counter())
 
     # TODO
 
@@ -145,7 +148,7 @@ defmodule IElixir.Kernel.Channels.Shell do
     #   IElixir.Kernel.Displayable.display(File.read!("/Users/dmitry.r/dev/elixir/IElixir/resources/logo.png"))
     # )
 
-    IOPub.display_data(
+    IOPub.execute_result(
       packet,
       IElixir.Kernel.Displayable.display(
         VegaLite.new(width: 400, height: 400)
@@ -154,7 +157,8 @@ defmodule IElixir.Kernel.Channels.Shell do
         |> VegaLite.encode_field(:x, "iteration", type: :quantitative)
         |> VegaLite.encode_field(:y, "score", type: :quantitative)
         |> VegaLite.to_spec()
-      )
+      ),
+      Session.get_counter()
     )
 
     {

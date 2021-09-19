@@ -60,6 +60,64 @@ defmodule IElixir.Kernel.Channels.IOPub do
     |> publish()
   end
 
+  # Code inputs
+  # https://jupyter-client.readthedocs.io/en/stable/messaging.html#code-inputs
+  @spec execute_input(
+          parent_packet :: IElixir.Kernel.Wire.Packet.t(),
+          code :: String.t(),
+          execution_count :: Integer
+        ) :: :ok
+  def execute_input(
+        %Packet{message: parent_message, uuids: uuids} = _parent_packet,
+        code,
+        execution_count
+      ) do
+    %Packet{
+      uuids: uuids,
+      message:
+        Message.from_parent(
+          Session.get_session(),
+          parent_message,
+          "display_data",
+          content: %{
+            code: code,
+            execution_count: execution_count
+          }
+        )
+    }
+    |> publish()
+  end
+
+  # Execution results
+  # https://jupyter-client.readthedocs.io/en/stable/messaging.html#id6
+  @spec execute_result(
+          parent_packet :: IElixir.Kernel.Wire.Packet.t(),
+          display :: IElixir.Kernel.Display.t(),
+          execution_count :: Integer
+        ) :: :ok
+  def execute_result(
+        %Packet{message: parent_message, uuids: uuids} = _parent_packet,
+        display,
+        execution_count
+      ) do
+    %Packet{
+      uuids: uuids,
+      message:
+        Message.from_parent(
+          Session.get_session(),
+          parent_message,
+          "execute_result",
+          content: %{
+            data: display.data,
+            metadata: display.metadata,
+            transient: display.transient,
+            execution_count: execution_count
+          }
+        )
+    }
+    |> publish()
+  end
+
   # Kernel status
   # https://jupyter-client.readthedocs.io/en/stable/messaging.html#kernel-status
 
