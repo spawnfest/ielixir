@@ -5,6 +5,7 @@ defmodule IElixir.Kernel.Supervisor do
   alias IElixir.Kernel.Channels
 
   alias IElixir.Kernel.Socket.Config, as: SocketConfig
+  import IElixir.Utils, only: [random_id: 0]
 
   def start_link(connection_data) do
     Supervisor.start_link(__MODULE__, connection_data, name: __MODULE__)
@@ -12,7 +13,7 @@ defmodule IElixir.Kernel.Supervisor do
 
   @impl true
   def init(connection_data) do
-    :net_kernel.start([:"session@127.0.0.1", :longnames])
+    :net_kernel.start([:"session#{random_id()}@127.0.0.1", :longnames])
     channel_starting_args = %SocketConfig{
       connection_data: connection_data
     }

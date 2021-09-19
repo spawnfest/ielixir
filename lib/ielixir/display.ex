@@ -2,8 +2,15 @@ defmodule IElixir.Display do
   @moduledoc """
   This module is to be propogated on target machine.
   """
-  @type t() :: %__MODULE__{fields: map()}
-  defstruct fields: %{}
+
+  def display({:ok, :"do not show this result in output"} = v), do: v
+
+  def display({:ok, value}) do
+    {:ok, IElixir.Displayable.display(value)}
+  end
+
+  def display(other), do: other
+
 end
 
 defprotocol IElixir.Displayable do

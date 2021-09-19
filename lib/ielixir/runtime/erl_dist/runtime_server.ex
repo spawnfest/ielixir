@@ -17,7 +17,7 @@ defmodule IElixir.Runtime.ErlDist.RuntimeServer do
 
   use GenServer, restart: :temporary
 
-  alias IElixir.SimpleEvaluator
+  alias IElixir.Evaluator
   alias IElixir.Runtime
   alias IElixir.Runtime.ErlDist.EvaluatorSupervisor
 
@@ -145,7 +145,7 @@ defmodule IElixir.Runtime.ErlDist.RuntimeServer do
         {:evaluate_code, code, current_cell, opts},
         %{evaluator: evaluator} = state
       ) do
-    SimpleEvaluator.evaluate_code(
+    Evaluator.evaluate_code(
       evaluator,
       state.owner,
       code,
@@ -157,7 +157,7 @@ defmodule IElixir.Runtime.ErlDist.RuntimeServer do
   end
 
   def handle_cast({:handle_completion, send_to, code, cursor, cell}, %{evaluator: evaluator} = state) do
-    SimpleEvaluator.handle_completion(evaluator, send_to, code, cursor, cell)
+    Evaluator.handle_completion(evaluator, send_to, code, cursor, cell)
     {:noreply, state}
   end
 

@@ -117,7 +117,6 @@ defmodule IElixir.Runtime.StandaloneInit do
   # so the string cannot have constructs newlines nor strings. That's why we pass
   # the parent node name as ARGV and write the code avoiding newlines.
   @child_node_eval_string """
-  IO.puts("Child node created");\
   [parent_node] = System.argv();\
   parent_node = String.to_atom(parent_node);\
   init_ref = make_ref();\
@@ -125,7 +124,6 @@ defmodule IElixir.Runtime.StandaloneInit do
   send(parent_process, {:node_started, init_ref, node(), self()});\
   receive do {:node_initialized, ^init_ref} ->\
     manager_ref = Process.monitor(IElixir.Runtime.ErlDist.NodeManager);\
-    IO.puts("Child node initialized");\
     receive do {:DOWN, ^manager_ref, :process, _object, _reason} -> :ok end;\
   after 10_000 ->\
     :timeout;\

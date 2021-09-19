@@ -21,9 +21,11 @@ defmodule IElixir.Runtime.ErlDist do
 
   # Modules to load into the connected node.
   @required_modules [
-    IElixir.SimpleEvaluator,
+    IElixir.Evaluator,
     IElixir.Evaluator.IOProxy,
-    IElixir.Evaluator.DefaultFormatter,
+    IElixir.Display,
+    IElixir.Displayable,
+    IElixir.Displayable.Any,
     IElixir.Completion,
     IElixir.Completion.IdentifierMatcher,
     IElixir.Runtime.ErlDist,

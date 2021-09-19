@@ -8,6 +8,7 @@ defmodule IElixir.Runtime.ElixirStandalone do
   # stay in the system when the session or the entire IElixir terminates.
 
   import IElixir.Runtime.StandaloneInit
+  import IElixir.Utils, only: [random_id: 0]
 
   @type t :: %__MODULE__{
           node: node(),
@@ -30,7 +31,7 @@ defmodule IElixir.Runtime.ElixirStandalone do
   def init() do
     parent_node = node()
     [_, hostname] = String.split("#{parent_node}", "@")
-    child_node = :"child@#{hostname}"
+    child_node = :"child#{random_id()}@#{hostname}"
     argv = [parent_node]
 
     with(
@@ -49,12 +50,7 @@ defmodule IElixir.Runtime.ElixirStandalone do
 
   defp start_elixir_node(elixir_path, node_name, eval, argv) do
     args = elixir_flags(node_name) ++ ["--eval", eval, "--" | Enum.map(argv, &to_string/1)]
-
-    IO.inspect(args, label: :args)
-    IO.inspect(elixir_path, label: :elixir_path)
-
     Port.open({:spawn_executable, elixir_path}, [:nouse_stdio, :hide, args: args])
-    |> IO.inspect(label: :port_spawn_executable)
   end
 end
 
