@@ -103,37 +103,81 @@ defmodule IElixir.Kernel.Channels.Shell do
   def handle_packet(
         %Packet{
           uuids: uuids,
-          message:
-            %Message{header: %{msg_type: "execute_request"}, content: _content} = parent_message
+          message: %Message{
+            header: %{msg_type: "complete_request"},
+            content: content
+          } = parent_message
+        } = packet,
+        _channel
+      ) do
+    Logger.debug("Received complete_request")
+    IOPub.busy_notifier(packet).()
+
+    result = Session.complete_request(:crypto.strong_rand_bytes(20), content)
+    Logger.debug("Returned complete_request: #{inspect result}")
+
+    {
+      %Packet{
+        uuids: uuids,
+        message:
+          Message.from_parent(
+            Session.get_session(),
+            parent_message,
+            "complete_reply",
+            content: %{
+              status: :ok,
+              matches: result.matches,
+              cursor_start: result.cursor_start,
+              cursor_end: result.cursor_end
+            }
+          )
+      },
+      IOPub.idle_notifier(packet)
+    }
+  end
+
+  def handle_packet(
+        %Packet{
+          uuids: uuids,
+          message: %Message{
+            header: %{msg_type: "execute_request"},
+            content: content,
+            metadata: %{"cellId" => cell}
+          } = parent_message
         } = packet,
         _channel
       ) do
     Logger.debug("Received execute_request")
+    Logger.debug("Packet: #{inspect packet}")
+
     IOPub.busy_notifier(packet).()
     Session.increase_counter()
 
-    # TODO
+    result = Session.execute_request(cell, content)
+    Logger.debug("Returned execute_request: #{inspect result}")
 
-    # magic_function(content) -> (stdout, stderr, display_Data)
+    result
+    |> Map.get(:output, [])
+    |> Enum.join("\n")
+    |> case do
+      "" -> nil
+      output -> IOPub.stream(packet, "stdout", output)
+    end
 
-    # END TODO
+    case result.response do
+      {:text, text} ->
+        IOPub.display_data(
+          packet,
+          data: %{"text/plain": text}
+        )
 
-    IOPub.stream(
-      packet,
-      "stdout",
-      "OUT: BOOOM!!"
-    )
-    IOPub.stream(
-      packet,
-      "stderr",
-      "ERROR: Crash!!"
-    )
+      {:error, exception, :runtime_restart_required} ->
+        IOPub.stream(packet, "stderr", exception)
+        IOPub.stream(packet, "stderr", "Restart runtime pls")
 
-    IOPub.display_data(
-      packet,
-      data: %{"text/plain": inspect(NaiveDateTime.utc_now)}
-    )
-
+      {:error, exception, _} ->
+        IOPub.stream(packet, "stderr", exception)
+    end
 
     {
       %Packet{
@@ -154,4 +198,5 @@ defmodule IElixir.Kernel.Channels.Shell do
       IOPub.idle_notifier(packet)
     }
   end
+
 end
