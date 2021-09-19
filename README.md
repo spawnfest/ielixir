@@ -4,7 +4,7 @@ Jupyter's kernel for Elixir
 
 ## Acknowledgements, licenses, and disclaimers
 
-Implementation is inspired by [`IPython`](https://github.com/pprzetacznik/IElixir), while all the codebase is totally rewritten to fit `escripts`, **Elixir**'s 1.12 `Mix.install/2` feature and kernel management introduced by [`livebook`](https://github.com/livebook-dev/livebook).
+Implementation is inspired by [`IElixir`](https://github.com/pprzetacznik/IElixir), while all the codebase is totally rewritten to fit `escripts`, **Elixir**'s 1.12 `Mix.install/2` feature and kernel management introduced by [`livebook`](https://github.com/livebook-dev/livebook).
 
 All the code for node management is fully taken (stolen | copy-pasted) from [`livebook`](https://github.com/livebook-dev/livebook)'s codebase.
 
