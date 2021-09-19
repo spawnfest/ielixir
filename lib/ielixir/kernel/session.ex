@@ -174,18 +174,18 @@ defmodule IElixir.Kernel.Session do
   end
 
   def handle_info(
-    {:completion_response, cell, matches, _cursor_start, _cursor_end},
-    %{completing_cells: completing_cells} = state
-  ) do
+        {:completion_response, cell, matches, _cursor_start, _cursor_end},
+        %{completing_cells: completing_cells} = state
+      ) do
     {{from, cell_state}, completing_cells} = Map.pop(completing_cells, cell)
 
-    # {cursor_start, cursor_end} = compute_cursor_start(cell_state.code, matches, cell_state.cursor)
+    cursor_start = IElixir.Util.Substring.calculate_substring_position(cell_state.code, matches)
     cursor = cell_state.cursor
 
     cell_state =
       cell_state
       |> Map.put(:matches, matches)
-      |> Map.put(:cursor_start, cursor)
+      |> Map.put(:cursor_start, cursor_start)
       |> Map.put(:cursor_end, cursor)
 
     GenServer.reply(from, cell_state)
@@ -202,5 +202,4 @@ defmodule IElixir.Kernel.Session do
     Logger.debug("Missed message: #{inspect(msg)}")
     {:noreply, state}
   end
-
 end
