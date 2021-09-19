@@ -31,7 +31,7 @@ defmodule IElixir.Runtime.ElixirStandalone do
   def init() do
     parent_node = node()
     [_, hostname] = String.split("#{parent_node}", "@")
-    child_node = :"child#{random_id()}@#{hostname}"
+    child_node = :"child-#{random_id()}@#{hostname}"
     argv = [parent_node]
 
     with(

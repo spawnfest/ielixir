@@ -30,6 +30,7 @@ defmodule IElixir.Evaluator do
   defp handle_cast({:evaluate_code, send_to, code, cell, opts}, %{context: context} = state) do
     IOProxy.configure(state.io_proxy, send_to, cell)
     file = Keyword.get(opts, :file, "nofile")
+
     context = put_in(context.env.file, file)
     start_time = System.monotonic_time()
 
@@ -44,6 +45,7 @@ defmodule IElixir.Evaluator do
           {context, response}
       end
 
+    update_history(cell, response)
     send(send_to, {:log, :debug, "Evaluation response is #{inspect(response)}"})
 
     evaluation_time_ms = get_execution_time_delta(start_time)
@@ -99,6 +101,8 @@ defmodule IElixir.Evaluator do
 
     :proc_lib.init_ack(evaluator)
 
+    Process.put(:iex_history, IEx.History.init())
+
     loop(state)
   end
 
@@ -118,7 +122,8 @@ defmodule IElixir.Evaluator do
 
   defp initial_context() do
     env = :elixir.env_for_eval([])
-    %{binding: [], env: env}
+    {:ok, _, context} = eval("import IEx.Helpers", %{binding: [], env: env})
+    context
   end
 
   defp loop(%{evaluator_ref: evaluator_ref} = state) do
@@ -179,4 +184,20 @@ defmodule IElixir.Evaluator do
     |> Kernel.-(started_at)
     |> System.convert_time_unit(:native, :millisecond)
   end
+
+  defp update_history(cell, response) do
+    resp =
+      case response do
+        {:ok, resp} -> resp
+        _           -> nil
+      end
+
+    iex_history =
+      :iex_history
+      |> Process.get()
+      |> IEx.History.append({cell, resp}, 1000)
+
+    Process.put(:iex_history, iex_history)
+  end
+
 end

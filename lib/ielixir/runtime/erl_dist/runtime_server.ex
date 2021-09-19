@@ -56,7 +56,6 @@ defmodule IElixir.Runtime.ErlDist.RuntimeServer do
   See `IElixir.Evaluator` for more details.
   """
   def evaluate_code(pid, code, cell, opts \\ []) do
-    IO.puts("sending evaluate_code")
     GenServer.cast(pid, {:evaluate_code, code, cell, opts})
   end
 

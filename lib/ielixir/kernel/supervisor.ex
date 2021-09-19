@@ -13,7 +13,7 @@ defmodule IElixir.Kernel.Supervisor do
 
   @impl true
   def init(connection_data) do
-    :net_kernel.start([:"session#{random_id()}@127.0.0.1", :longnames])
+    :net_kernel.start([:"session-#{random_id()}@127.0.0.1", :longnames])
     channel_starting_args = %SocketConfig{
       connection_data: connection_data
     }
