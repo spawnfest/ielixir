@@ -6,7 +6,7 @@ Jupyter's kernel for Elixir
 
 Implementation is inspired by [`IElixir`](https://github.com/pprzetacznik/IElixir), while all the codebase is totally rewritten to fit `escripts`, **Elixir**'s 1.12 `Mix.install/2` feature and kernel management introduced by [`livebook`](https://github.com/livebook-dev/livebook).
 
-All the code for node management is fully taken (stolen | copy-pasted) from [`livebook`](https://github.com/livebook-dev/livebook)'s codebase.
+All the code for node management is fully taken from [`livebook`](https://github.com/livebook-dev/livebook)'s codebase.
 
 This project is distributed under the `MIT` license, while node management parts are distributed under `Apache License 2.0`, inherited from [`livebook`](https://github.com/livebook-dev/livebook).
 
