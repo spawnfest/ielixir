@@ -66,11 +66,10 @@ defmodule IElixir.Mixfile do
         "lib",
         "priv",
         "mix.exs",
-        "README.md",
-        "LICENSE"
+        "README.md"
       ],
       maintainers: ["Dmitry Rubinstein", "Georgy Sychev"],
-      licenses: ["MIT"]
+      licenses: ["MIT", "Apache-2.0"]
     ]
   end
 end
