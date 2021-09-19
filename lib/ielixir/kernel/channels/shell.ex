@@ -104,62 +104,83 @@ defmodule IElixir.Kernel.Channels.Shell do
         %Packet{
           uuids: uuids,
           message:
-            %Message{header: %{msg_type: "execute_request"}, content: %{"code" => code}} =
-              parent_message
+            %Message{
+              header: %{msg_type: "complete_request"},
+              content: content
+            } = parent_message
+        } = packet,
+        _channel
+      ) do
+    Logger.debug("Received complete_request")
+    IOPub.busy_notifier(packet).()
+
+    # random bytes - adhoc to workaround complete_request requirement in cell_id
+    result = Session.complete_request(:crypto.strong_rand_bytes(20), content)
+    Logger.debug("Returned complete_request: #{inspect(result)}")
+
+    {
+      %Packet{
+        uuids: uuids,
+        message:
+          Message.from_parent(
+            Session.get_session(),
+            parent_message,
+            "complete_reply",
+            content: %{
+              status: :ok,
+              matches: result.matches,
+              cursor_start: result.cursor_start,
+              cursor_end: result.cursor_end
+            }
+          )
+      },
+      IOPub.idle_notifier(packet)
+    }
+  end
+
+  def handle_packet(
+        %Packet{
+          uuids: uuids,
+          message:
+            %Message{
+              header: %{msg_type: "execute_request"},
+              content: content,
+              metadata: %{"cellId" => cell}
+            } = parent_message
         } = packet,
         _channel
       ) do
     Logger.debug("Received execute_request")
+    Logger.debug("Packet: #{inspect(packet)}")
+
     IOPub.busy_notifier(packet).()
     Session.increase_counter()
+    result = Session.execute_request(cell, content)
+    Logger.debug("Returned execute_request: #{inspect(result)}")
 
-    IOPub.execute_input(packet, code, Session.get_counter())
+    result
+    |> Map.get(:output, [])
+    |> Enum.join("\n")
+    |> case do
+      "" -> nil
+      output -> IOPub.stream(packet, "stdout", output)
+    end
 
-    # TODO
+    case result.response do
+      {:text, text} ->
+        IOPub.execute_result(
+          packet,
+          %IElixir.Kernel.Display{data: %{"text/plain": text}},
+          Session.get_counter()
+        )
 
-    # magic_function(content) -> (stdout, stderr, display_Data)
+      {:error, exception, :runtime_restart_required} ->
+        IOPub.stream(packet, "stderr", exception)
+        IOPub.stream(packet, "stderr", "Restart runtime pls")
 
-    # END TODO
-
-    IOPub.stream(
-      packet,
-      "stdout",
-      "OUT: BOOOM!!"
-    )
-
-    IOPub.stream(
-      packet,
-      "stderr",
-      "ERROR: Crash!!"
-    )
-
-    # IOPub.display_data(
-    #   packet,
-    #   IElixir.Kernel.Displayable.display(NaiveDateTime.utc_now)
-    # )
-
-    # IOPub.display_data(
-    #   packet,
-    #   IElixir.Kernel.Displayable.display(~s({"foo": true}))
-    # )
-
-    # IOPub.display_data(
-    #   packet,
-    #   IElixir.Kernel.Displayable.display(File.read!("/Users/dmitry.r/dev/elixir/IElixir/resources/logo.png"))
-    # )
-
-    IOPub.execute_result(
-      packet,
-      IElixir.Kernel.Displayable.display(
-        VegaLite.new(width: 400, height: 400)
-        |> VegaLite.data_from_series(iteration: 1..100, score: 1..100)
-        |> VegaLite.mark(:line)
-        |> VegaLite.encode_field(:x, "iteration", type: :quantitative)
-        |> VegaLite.encode_field(:y, "score", type: :quantitative)
-        |> VegaLite.to_spec()
-      ),
-      Session.get_counter()
-    )
+      {:error, exception, _} ->
+        IOPub.stream(packet, "stderr", exception)
+    end
 
     {
       %Packet{
