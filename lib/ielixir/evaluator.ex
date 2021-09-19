@@ -1,7 +1,9 @@
-defmodule IElixir.SimpleEvaluator do
-
-  alias IElixir.Evaluator
+defmodule IElixir.Evaluator do
   
+  alias IElixir.Completion
+  alias IElixir.Display
+  alias IElixir.Evaluator.IOProxy
+
   @doc """
   Starts the evaluator.
 
@@ -26,7 +28,7 @@ defmodule IElixir.SimpleEvaluator do
   end
 
   defp handle_cast({:evaluate_code, send_to, code, cell, opts}, %{context: context} = state) do
-    Evaluator.IOProxy.configure(state.io_proxy, send_to, cell)
+    IOProxy.configure(state.io_proxy, send_to, cell)
     file = Keyword.get(opts, :file, "nofile")
     context = put_in(context.env.file, file)
     start_time = System.monotonic_time()
@@ -42,12 +44,14 @@ defmodule IElixir.SimpleEvaluator do
           {context, response}
       end
 
+    send(send_to, {:log, :debug, "Evaluation response is #{inspect(response)}"})
+
     evaluation_time_ms = get_execution_time_delta(start_time)
 
-    Evaluator.IOProxy.flush(state.io_proxy)
-    Evaluator.IOProxy.clear_input_buffers(state.io_proxy)
+    IOProxy.flush(state.io_proxy)
+    IOProxy.clear_input_buffers(state.io_proxy)
 
-    output = state.formatter.format_response(response)
+    output = Display.display(response)
     metadata = %{evaluation_time_ms: evaluation_time_ms}
     send(send_to, {:evaluation_response, cell, output, metadata})
 
@@ -59,7 +63,7 @@ defmodule IElixir.SimpleEvaluator do
     # Safely rescue from completion errors
     %{items: items} =
       try do
-        IElixir.Completion.handle_request({:completion, code}, context.binding, context.env)
+        Completion.handle_request({:completion, code}, context.binding, context.env)
       rescue
         error ->
           send(send_to, {:log, :error, Exception.format(:error, error, __STACKTRACE__)})
@@ -83,7 +87,7 @@ defmodule IElixir.SimpleEvaluator do
   def init(opts) do
     formatter = Keyword.get(opts, :formatter, Evaluator.IdentityFormatter)
 
-    {:ok, io_proxy} = Evaluator.IOProxy.start_link()
+    {:ok, io_proxy} = IOProxy.start_link()
 
     # Use the dedicated IO device as the group leader,
     # so that it handles all :stdio operations.
@@ -99,7 +103,7 @@ defmodule IElixir.SimpleEvaluator do
   end
 
   defp cast(evaluator, message) do
-    send(evaluator.pid, {:cast, evaluator.ref, message})
+    send(evaluator.pid, {:__ielixir__cast__, evaluator.ref, message})
     :ok
   end
 
@@ -124,7 +128,7 @@ defmodule IElixir.SimpleEvaluator do
       #   send(pid, {ref, reply})
       #   loop(state)
 
-      {:cast, ^evaluator_ref, message} ->
+      {:__ielixir__cast__, ^evaluator_ref, message} ->
         {:noreply, state} = handle_cast(message, state)
         loop(state)
     end

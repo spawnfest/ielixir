@@ -167,12 +167,11 @@ defmodule IElixir.Kernel.Channels.Shell do
     end
 
     case result.response do
-      {:text, text} ->
-        IOPub.execute_result(
-          packet,
-          %IElixir.Kernel.Display{data: %{"text/plain": text}},
-          Session.get_counter()
-        )
+      :ignored ->
+        nil
+
+      {:display, display} ->
+        IOPub.execute_result(packet, display, Session.get_counter())
 
       {:error, exception, :runtime_restart_required} ->
         IOPub.stream(packet, "stderr", exception)

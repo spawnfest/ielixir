@@ -147,10 +147,10 @@ defmodule IElixir.Kernel.Session do
     {:noreply, Map.update(state, :execution_count, 0, &(&1 + 1))}
   end
 
-  def handle_info({:evalutaion_output, cell, data}, %{evaluating_cells: evaluating_cells} = state) do
+  def handle_info({:evaluation_output, cell, data}, %{evaluating_cells: evaluating_cells} = state) do
     evaluating_cells =
       Map.update!(evaluating_cells, cell, fn {from, cell_data} ->
-        cell_data = Map.update(cell_data, :output, &[data | &1], [data])
+        cell_data = Map.update(cell_data, :output, [data], &[data | &1])
         {from, cell_data}
       end)
 
@@ -162,6 +162,8 @@ defmodule IElixir.Kernel.Session do
         %{evaluating_cells: evaluating_cells} = state
       ) do
     {{from, cell_state}, evaluating_cells} = Map.pop(evaluating_cells, cell)
+
+    data = IElixir.Kernel.Display.display(data)
 
     cell_state =
       cell_state

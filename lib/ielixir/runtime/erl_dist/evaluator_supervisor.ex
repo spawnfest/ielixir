@@ -6,7 +6,6 @@ defmodule IElixir.Runtime.ErlDist.EvaluatorSupervisor do
 
   use DynamicSupervisor
 
-  alias IElixir.SimpleEvaluator
   alias IElixir.Evaluator
 
   def start_link(opts \\ []) do
@@ -25,7 +24,7 @@ defmodule IElixir.Runtime.ErlDist.EvaluatorSupervisor do
   def start_evaluator(supervisor) do
     case DynamicSupervisor.start_child(
            supervisor,
-           {SimpleEvaluator, [formatter: Evaluator.DefaultFormatter]}
+           {Evaluator, [formatter: Evaluator.DefaultFormatter]}
          ) do
       {:ok, _pid, evaluator} -> {:ok, evaluator}
       {:error, reason} -> {:error, reason}

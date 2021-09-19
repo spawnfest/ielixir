@@ -56,7 +56,7 @@ defmodule IElixir do
     # Logger.debug(File.cwd())
     Logger.debug("Starting IElixir kernel with connection_filed #{connection_file_path}")
 
-    # 1. Parsing connection file
+    # Parsing connection file
     connection_data =
       connection_file_path
       |> IElixir.Kernel.ConnectionFile.parse()

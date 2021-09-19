@@ -183,22 +183,6 @@ defmodule IElixir.Evaluator.IOProxy do
     io_requests(reqs, {:ok, state})
   end
 
-  # IElixir custom request type, handled in a special manner
-  # by IOProxy and safely failing for any other IO device
-  # (resulting in the {:error, :request} response).
-  defp io_request({:livebook_put_output, output}, state) do
-    state = flush_buffer(state)
-    send(state.target, {:evaluation_output, state.ref, output})
-
-    state =
-      case Evaluator.widget_pid_from_output(output) do
-        {:ok, pid} -> update_in(state.widget_pids, &MapSet.put(&1, pid))
-        :error -> state
-      end
-
-    {:ok, state}
-  end
-
   defp io_request(_, state) do
     {{:error, :request}, state}
   end
