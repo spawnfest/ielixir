@@ -16,11 +16,11 @@ RUN python3.9 -m pip install jupyterlab
 
 RUN jupyter labextension install jupyterlab-ielixir
 
+ARG time=0
+
 RUN mix local.hex --force && mix local.rebar --force \
     && mix escript.install --force github spawnfest/ielixir \ 
     && ln -s /root/.mix/escripts/ielixir /usr/bin/ielixir
-
-ARG time=0
     
 RUN ielixir install
 
