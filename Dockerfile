@@ -1,6 +1,5 @@
 FROM hexpm/elixir:1.12.3-erlang-24.0.6-ubuntu-xenial-20210114
 
-
 RUN apt-get update && apt-get install -y \
     software-properties-common git curl \
     && add-apt-repository ppa:deadsnakes/ppa \ 
@@ -19,8 +18,11 @@ RUN jupyter labextension install jupyterlab-ielixir
 
 RUN mix local.hex --force && mix local.rebar --force \
     && mix escript.install --force github spawnfest/ielixir \ 
-    && ln -s /root/.mix/escripts/ielixir /usr/bin/ielixir \
-    && ielixir install
+    && ln -s /root/.mix/escripts/ielixir /usr/bin/ielixir
+
+ARG time=0
+    
+RUN ielixir install
 
 WORKDIR /workspace
 
